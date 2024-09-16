@@ -6,6 +6,27 @@ document.addEventListener('DOMContentLoaded', () => {
     let history = [];  // To keep track of the navigation history
     let isGridView = false;  // Track current layout state
 
+    // Function to get icon based on file type
+    function getIcon(type, name) {
+        const extension = name.split('.').pop();
+        switch (type) {
+            case 'dir': return 'folder';
+            case 'file':
+                switch (extension) {
+                    case 'jpg':
+                    case 'jpeg':
+                    case 'png': return 'image';
+                    case 'pdf': return 'picture_as_pdf';
+                    case 'txt': return 'text_format';
+                    case 'js': return 'code';
+                    case 'html': return 'code';
+                    case 'css': return 'code';
+                    default: return 'insert_drive_file';  // Default file icon
+                }
+            default: return 'insert_drive_file';  // Default file icon
+        }
+    }
+
     // Function to fetch and display repo contents
     function fetchRepoContents(path = '') {
         fetch(repoApiBaseUrl + path)
@@ -39,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Add icons based on type
                         const icon = document.createElement('i');
                         icon.className = `material-icons icon`;
-                        icon.textContent = item.type === 'dir' ? 'folder' : 'insert_drive_file';  // Folder or file icon
+                        icon.textContent = getIcon(item.type, item.name);  // Get relevant icon
                         element.prepend(icon);
 
                         if (item.type === 'dir') {
@@ -83,9 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleLayoutButton.addEventListener('click', () => {
         isGridView = !isGridView;  // Toggle the layout state
         repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : 'list'}`;  // Apply grid or list class
-        toggleLayoutButton.innerHTML = isGridView 
-            ? '<i class="material-icons left">view_list</i> Switch to List' 
-            : '<i class="material-icons left">view_module</i> Switch to Grid';  // Update button text
+        toggleLayoutButton.innerHTML = `<i class="material-icons"> ${isGridView ? 'view_list' : 'view_module'}</i>`;  // Update button icon
     });
 
     // Load the root of the repo
