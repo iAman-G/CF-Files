@@ -1,6 +1,6 @@
 const repoOwner = 'iAman-G';  // Replace with your GitHub username
 const repoName = 'CF-Files';  // Replace with your repository name
-const githubToken = import.meta.env.VUE_APP_GITHUB_TOKEN;  // Replace with your personal GitHub token
+const githubToken = .env.VUE_APP_GITHUB_TOKEN;  // Replace with your personal GitHub token
 
 //const githubToken = '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';  // Replace with your personal GitHub token
 const githubApiBaseUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/`;
