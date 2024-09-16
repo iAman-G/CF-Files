@@ -1,5 +1,7 @@
-const repoApiBaseUrl = `https://cf-filesb.iaman.workers.dev/`;  // Replace with your Cloudflare Worker URL
+const repoApiBaseUrl = `https://cf-filesb.iaman.workers.dev/`;  // Cloudflare Worker URL
 const repoContentsElement = document.getElementById('repo-contents');
+const backButton = document.getElementById('back-button');
+let history = [];  // To keep track of the navigation history
 
 // Function to fetch and display repo contents
 function fetchRepoContents(path = '') {
@@ -16,6 +18,14 @@ function fetchRepoContents(path = '') {
             // Clear existing content
             repoContentsElement.innerHTML = '';
 
+            if (path) {
+                // Show the back button if we're in a subdirectory
+                backButton.style.display = 'block';
+            } else {
+                // Hide the back button if we're in the root directory
+                backButton.style.display = 'none';
+            }
+
             if (Array.isArray(data)) {
                 // Display files and directories
                 data.forEach(item => {
@@ -25,7 +35,10 @@ function fetchRepoContents(path = '') {
 
                     if (item.type === 'dir') {
                         // Fetch contents of the folder on click
-                        element.addEventListener('click', () => fetchRepoContents(item.path));
+                        element.addEventListener('click', () => {
+                            history.push(path);  // Add current path to history
+                            fetchRepoContents(item.path);
+                        });
                     } else {
                         // Create a download link
                         element.href = item.download_url;  // Use download_url to get the direct file URL
@@ -47,6 +60,15 @@ function fetchRepoContents(path = '') {
         })
         .catch(error => console.error('Error fetching repo contents:', error));
 }
+
+// Function to handle the back navigation
+function goBack() {
+    const previousPath = history.pop();  // Get the last path from history
+    fetchRepoContents(previousPath);  // Fetch contents of the previous path
+}
+
+// Add event listener to the back button
+backButton.addEventListener('click', goBack);
 
 // Load the root of the repo
 fetchRepoContents();
