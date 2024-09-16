@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let history = [];  // To keep track of navigation history
     let isGridView = false;  // Track current layout state
     let authToken = null;  // To store the authentication token
+    let protectedFolders = ['/protected/'];  // Example: list of protected folders
 
     // Function to get icon based on file type
     function getIcon(type, name) {
@@ -43,7 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to fetch and display repo contents
     function fetchRepoContents(path = '') {
-        if (!authToken) {
+        // Determine if the path is protected
+        const isProtected = protectedFolders.some(folder => path.startsWith(folder));
+
+        if (!authToken && isProtected) {
             promptForAuth().then(token => {
                 authToken = token;
                 fetchData(path);  // Retry fetching data with authentication
@@ -58,14 +62,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Helper function to fetch data
     function fetchData(path) {
         const headers = new Headers();
-        headers.append('Authorization', `Basic ${authToken}`);
+        if (authToken) {
+            headers.append('Authorization', `Basic ${authToken}`);
+        }
 
         fetch(repoApiBaseUrl + path, { headers })
             .then(response => {
                 if (response.status === 401) {
                     // Unauthorized, prompt for credentials
-                    authToken = null;
-                    fetchRepoContents(path);
+                    if (protectedFolders.some(folder => path.startsWith(folder))) {
+                        authToken = null;
+                        fetchRepoContents(path);
+                    } else {
+                        throw new Error('Unauthorized access');
+                    }
                 } else if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
                 }
