@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add event listener to the toggle layout button
     toggleLayoutButton.addEventListener('click', () => {
         isGridView = !isGridView;  // Toggle the layout state
-        repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : ''}`;  // Apply grid or list class
+        repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : 'list'}`;  // Apply grid or list class
         toggleLayoutButton.textContent = isGridView ? 'Switch to List' : 'Switch to Grid';  // Update button text
     });
 
