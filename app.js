@@ -5,35 +5,68 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleLayoutButton = document.getElementById('toggle-layout');
     let history = [];  // To keep track of navigation history
     let isGridView = false;  // Track current layout state
+    let authToken = null;  // To store the authentication token
 
     // Function to get icon based on file type
     function getIcon(type, name) {
         const extension = name.split('.').pop().toLowerCase();
         switch (type) {
-            case 'dir': return 'folder';
+            case 'dir': return 'folder';  // Folder icon
             case 'file':
                 switch (extension) {
                     case 'jpg':
                     case 'jpeg':
-                    case 'png': return 'image';
-                    case 'pdf': return 'picture_as_pdf';
-                    case 'txt': return 'text_format';
+                    case 'png': return 'image';  // Image file icon
+                    case 'pdf': return 'picture_as_pdf';  // PDF file icon
+                    case 'txt': return 'text_format';  // Text file icon
                     case 'js':
                     case 'html':
-                    case 'css': return 'code';
+                    case 'css': return 'code';  // Code file icon
                     default: return 'insert_drive_file';  // Default file icon
                 }
             default: return 'insert_drive_file';  // Default file icon
         }
     }
 
+    // Function to prompt for authentication
+    function promptForAuth() {
+        return new Promise((resolve, reject) => {
+            const username = prompt('Enter your username:');
+            const password = prompt('Enter your password:');
+            if (username && password) {
+                resolve(btoa(`${username}:${password}`));  // Encode credentials to base64
+            } else {
+                reject(new Error('Authentication credentials are required.'));
+            }
+        });
+    }
+
     // Function to fetch and display repo contents
     function fetchRepoContents(path = '') {
+        if (!authToken) {
+            promptForAuth().then(token => {
+                authToken = token;
+                fetchData(path);  // Retry fetching data with authentication
+            }).catch(error => {
+                console.error('Authentication error:', error);
+            });
+        } else {
+            fetchData(path);  // Fetch data with existing authentication
+        }
+    }
+
+    // Helper function to fetch data
+    function fetchData(path) {
         const headers = new Headers();
+        headers.append('Authorization', `Basic ${authToken}`);
 
         fetch(repoApiBaseUrl + path, { headers })
             .then(response => {
-                if (!response.ok) {
+                if (response.status === 401) {
+                    // Unauthorized, prompt for credentials
+                    authToken = null;
+                    fetchRepoContents(path);
+                } else if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
                 }
                 return response.json();
@@ -55,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (Array.isArray(data)) {
                     // Display files and directories
                     data.forEach(item => {
-                        const element = document.createElement('a');
+                        const element = document.createElement('div');
                         element.textContent = item.name;
                         element.className = `repo-item ${item.type === 'dir' ? 'folder' : 'file'}`;
 
@@ -106,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleLayoutButton.addEventListener('click', () => {
         isGridView = !isGridView;  // Toggle the layout state
         repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : 'list'}`;  // Apply grid or list class
-        toggleLayoutButton.innerHTML = `<i class="material-icons"> ${isGridView ? 'view_list' : 'view_module'}</i>`;  // Update button icon
+        toggleLayoutButton.innerHTML = `<i class="material-icons">${isGridView ? 'view_list' : 'view_module'}</i>`;  // Update button icon
     });
 
     // Load the root of the repo
