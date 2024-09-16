@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to fetch and display repo contents
     function fetchRepoContents(path = '') {
-        // Determine if the path is protected
         const isProtected = protectedFolders.some(folder => path.startsWith(folder));
 
         if (!authToken && isProtected) {
