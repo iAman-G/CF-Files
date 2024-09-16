@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const repoContentsElement = document.getElementById('repo-contents');
     const backButton = document.getElementById('back-button');
     const toggleLayoutButton = document.getElementById('toggle-layout');
-    let history = [];  // To keep track of the navigation history
+    let history = [];  // To keep track of navigation history
     let isGridView = false;  // Track current layout state
 
     // Function to get icon based on file type
@@ -29,7 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to fetch and display repo contents
     function fetchRepoContents(path = '') {
-        fetch(repoApiBaseUrl + path)
+        const headers = new Headers();
+
+        fetch(repoApiBaseUrl + path, { headers })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
