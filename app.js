@@ -36,6 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         element.textContent = item.name;
                         element.className = `repo-item ${item.type === 'dir' ? 'folder' : 'file'}`;
 
+                        // Add icons based on type
+                        const icon = document.createElement('i');
+                        icon.className = `material-icons icon`;
+                        icon.textContent = item.type === 'dir' ? 'folder' : 'insert_drive_file';  // Folder or file icon
+                        element.prepend(icon);
+
                         if (item.type === 'dir') {
                             // Fetch contents of the folder on click
                             element.addEventListener('click', () => {
@@ -77,7 +83,9 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleLayoutButton.addEventListener('click', () => {
         isGridView = !isGridView;  // Toggle the layout state
         repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : 'list'}`;  // Apply grid or list class
-        toggleLayoutButton.textContent = isGridView ? 'Switch to List' : 'Switch to Grid';  // Update button text
+        toggleLayoutButton.innerHTML = isGridView 
+            ? '<i class="material-icons left">view_list</i> Switch to List' 
+            : '<i class="material-icons left">view_module</i> Switch to Grid';  // Update button text
     });
 
     // Load the root of the repo
