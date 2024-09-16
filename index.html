@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -89,15 +89,22 @@
         .folder {
             font-weight: bold;
         }
-        .list .repo-item {
+
+        /* List view styling */
+        .repo-contents.list .repo-item {
             flex: 1 1 calc(100% - 20px); /* Full width for list view */
         }
-        .grid .repo-item {
-            flex: 1 1 calc(33.333% - 10px); /* Grid layout for larger screens */
+
+        /* Grid view styling */
+        .repo-contents.grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Automatically fit columns based on available space */
+            gap: 20px;
         }
+
         @media (max-width: 600px) {
-            .grid .repo-item {
-                flex: 1 1 calc(50% - 10px); /* Grid layout for smaller screens */
+            .repo-contents.grid .repo-item {
+                flex: 1 1 calc(50% - 10px); /* Two items per row for small screens */
             }
         }
     </style>
