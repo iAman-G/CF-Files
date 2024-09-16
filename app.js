@@ -19,9 +19,9 @@ function fetchRepoContents(path = '') {
             if (Array.isArray(data)) {
                 // Display files and directories
                 data.forEach(item => {
-                    const element = document.createElement('div');
+                    const element = document.createElement('a');
                     element.textContent = item.name;
-                    element.className = item.type === 'dir' ? 'folder' : 'file';
+                    element.className = `collection-item repo-item ${item.type === 'dir' ? 'folder' : 'file'}`;
 
                     if (item.type === 'dir') {
                         // Fetch contents of the folder on click
