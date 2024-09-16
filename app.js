@@ -2,7 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const repoApiBaseUrl = `https://cf-filesb.iaman.workers.dev/`;  // Cloudflare Worker URL
     const repoContentsElement = document.getElementById('repo-contents');
     const backButton = document.getElementById('back-button');
+    const toggleLayoutButton = document.getElementById('toggle-layout');
     let history = [];  // To keep track of the navigation history
+    let isGridView = false;  // Track current layout state
 
     // Function to fetch and display repo contents
     function fetchRepoContents(path = '') {
@@ -32,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     data.forEach(item => {
                         const element = document.createElement('a');
                         element.textContent = item.name;
-                        element.className = `collection-item repo-item ${item.type === 'dir' ? 'folder' : 'file'}`;
+                        element.className = `repo-item ${item.type === 'dir' ? 'folder' : 'file'}`;
 
                         if (item.type === 'dir') {
                             // Fetch contents of the folder on click
@@ -70,6 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add event listener to the back button
     backButton.addEventListener('click', goBack);
+
+    // Add event listener to the toggle layout button
+    toggleLayoutButton.addEventListener('click', () => {
+        isGridView = !isGridView;  // Toggle the layout state
+        repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : ''}`;  // Apply grid or list class
+        toggleLayoutButton.textContent = isGridView ? 'Switch to List' : 'Switch to Grid';  // Update button text
+    });
 
     // Load the root of the repo
     fetchRepoContents();
