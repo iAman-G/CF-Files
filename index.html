@@ -10,9 +10,10 @@
         .repo-item {
             padding: 10px;
             border-radius: 4px;
-            margin: 5px 0;
+            margin: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
+            text-align: center; /* Center text in grid view */
         }
         .repo-item:hover {
             background-color: #f0f0f0;
@@ -20,9 +21,24 @@
         .folder {
             font-weight: bold;
         }
-        /* Hide back button initially */
         #back-button {
             display: none;
+        }
+        .repo-contents {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .repo-item {
+            flex: 1 1 100%; /* Default to list layout */
+        }
+        .grid .repo-item {
+            flex: 1 1 calc(33.333% - 10px); /* Grid layout for larger screens */
+            margin: 5px;
+        }
+        @media (max-width: 600px) {
+            .grid .repo-item {
+                flex: 1 1 calc(50% - 10px); /* Grid layout for smaller screens */
+            }
         }
     </style>
 </head>
@@ -31,8 +47,10 @@
         <h1 class="center-align">Browse Repository</h1>
         <!-- Back button to navigate up a level -->
         <button id="back-button" class="btn waves-effect waves-light">Back</button>
+        <!-- Toggle button for switching layouts -->
+        <button id="toggle-layout" class="btn waves-effect waves-light">Switch to Grid</button>
         <!-- Container for repo contents -->
-        <div id="repo-contents" class="collection"></div>
+        <div id="repo-contents" class="repo-contents"></div>
     </div>
 
     <!-- Materialize JavaScript -->
