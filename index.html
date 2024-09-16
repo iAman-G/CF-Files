@@ -9,6 +9,36 @@
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
+        body {
+            background-color: #e3f2fd; /* Light blue background */
+        }
+        .container {
+            padding: 20px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        #back-button, #toggle-layout {
+            background-color: #03a9f4; /* Light blue button background */
+            color: white;
+        }
+        #back-button {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            padding: 5px 10px;
+            border-radius: 50%;
+        }
+        #toggle-layout {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 10px;
+            border-radius: 50%;
+        }
         .repo-contents {
             display: flex;
             flex-wrap: wrap;
@@ -16,26 +46,26 @@
             padding-top: 10px; /* Add padding to the top for spacing */
         }
         .repo-item {
-            padding: 15px;
+            padding: 10px;
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
-            text-align: center; /* Center text */
+            text-align: left; /* Left align text in list view */
             text-decoration: none;
             display: flex;
-            flex-direction: column;
             align-items: center;
+            gap: 10px; /* Space between icon and text */
+            background-color: #ffffff; /* White background for items */
         }
         .repo-item:hover {
-            background-color: #f0f0f0;
-            transform: scale(1.05); /* Slightly enlarge on hover */
-        }
-        .folder {
-            font-weight: bold;
+            background-color: #b3e5fc; /* Light blue on hover */
+            transform: scale(1.02); /* Slightly enlarge on hover */
         }
         .icon {
             font-size: 24px;
-            margin-bottom: 5px; /* Space between icon and text */
+        }
+        .folder {
+            font-weight: bold;
         }
         .list .repo-item {
             flex: 1 1 100%; /* Full width for list view */
@@ -48,15 +78,6 @@
                 flex: 1 1 calc(50% - 10px); /* Grid layout for smaller screens */
             }
         }
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        #back-button, #toggle-layout {
-            flex: 1;
-            margin: 0 5px;
-        }
     </style>
 </head>
 <body>
@@ -64,12 +85,12 @@
         <h1 class="center-align">Browse Repository</h1>
         <div class="button-container">
             <!-- Back button to navigate up a level -->
-            <button id="back-button" class="btn waves-effect waves-light"> 
-                <i class="material-icons left">arrow_back</i> Back
+            <button id="back-button" class="btn-small waves-effect waves-light"> 
+                <i class="material-icons">arrow_back</i>
             </button>
             <!-- Toggle button for switching layouts -->
-            <button id="toggle-layout" class="btn waves-effect waves-light"> 
-                <i class="material-icons left">view_module</i> Switch to Grid
+            <button id="toggle-layout" class="btn-small waves-effect waves-light"> 
+                <i class="material-icons">view_module</i>
             </button>
         </div>
         <!-- Container for repo contents -->
