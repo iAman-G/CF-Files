@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -70,6 +70,24 @@
         .icon {
             font-size: 24px;
         }
+        /* Override Materialize icon styles for better alignment in buttons */
+        .btn i, 
+        .btn-large i, 
+        .btn-small i, 
+        .btn-floating i, 
+        .btn-flat i {
+            font-size: 1.3rem;
+            line-height: initial; /* Use 'initial' to reset line-height */
+            vertical-align: middle; /* Ensure icons are vertically centered */
+        }
+
+        /* Additional styles to ensure proper alignment */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .folder {
             font-weight: bold;
         }
