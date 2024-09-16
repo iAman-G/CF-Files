@@ -1,4 +1,3 @@
-const repoApiBaseUrl = `https://cf-filesb.iaman.workers.dev/`;  // Replace with your Cloudflare Worker URL
 const repoContentsElement = document.getElementById('repo-contents');
 
 // Function to fetch and display repo contents
@@ -27,8 +26,16 @@ function fetchRepoContents(path = '') {
                         // Fetch contents of the folder on click
                         element.addEventListener('click', () => fetchRepoContents(item.path));
                     } else {
-                        // Open file in a new tab
-                        element.addEventListener('click', () => window.open(item.html_url, '_blank'));
+                        // Create a download link
+                        element.href = item.download_url;  // Use download_url to get the direct file URL
+                        element.download = item.name;  // Set filename for download
+                        element.addEventListener('click', (event) => {
+                            // Handle file download directly
+                            if (!element.href) {
+                                event.preventDefault();
+                                console.error('No download URL available.');
+                            }
+                        });
                     }
 
                     repoContentsElement.appendChild(element);
