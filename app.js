@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to get icon based on file type
     function getIcon(type, name) {
-        const extension = name.split('.').pop();
+        const extension = name.split('.').pop().toLowerCase();
         switch (type) {
             case 'dir': return 'folder';
             case 'file':
@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     case 'png': return 'image';
                     case 'pdf': return 'picture_as_pdf';
                     case 'txt': return 'text_format';
-                    case 'js': return 'code';
-                    case 'html': return 'code';
+                    case 'js':
+                    case 'html':
                     case 'css': return 'code';
                     default: return 'insert_drive_file';  // Default file icon
                 }
