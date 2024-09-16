@@ -6,26 +6,26 @@ document.addEventListener('DOMContentLoaded', () => {
     let history = [];  // To keep track of navigation history
     let isGridView = false;  // Track current layout state
     let authToken = null;  // To store the authentication token
-    let protectedFolders = ['/public/'];  // Example: list of protected folders
+    const protectedFolders = ['/public/'];  // List of protected folders
 
     // Function to get icon based on file type
     function getIcon(type, name) {
         const extension = name.split('.').pop().toLowerCase();
         switch (type) {
-            case 'dir': return 'folder';  // Folder icon
+            case 'dir': return 'folder';
             case 'file':
                 switch (extension) {
                     case 'jpg':
                     case 'jpeg':
-                    case 'png': return 'image';  // Image file icon
-                    case 'pdf': return 'picture_as_pdf';  // PDF file icon
-                    case 'txt': return 'text_format';  // Text file icon
+                    case 'png': return 'image';
+                    case 'pdf': return 'picture_as_pdf';
+                    case 'txt': return 'text_format';
                     case 'js':
                     case 'html':
-                    case 'css': return 'code';  // Code file icon
-                    default: return 'insert_drive_file';  // Default file icon
+                    case 'css': return 'code';
+                    default: return 'insert_drive_file';
                 }
-            default: return 'insert_drive_file';  // Default file icon
+            default: return 'insert_drive_file';
         }
     }
 
