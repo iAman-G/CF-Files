@@ -1,21 +1,12 @@
-const repoOwner = ${REPO_OWNER};  // Replace with your GitHub username
-const repoName = ${REPO_NAME};  // Replace with your repository name
-const githubToken = ${GITHUB_TOKEN};  // Replace with your personal GitHub token
-
-//const githubApiBaseUrl = `https://cf-filesb.iaman.workers.dev/`;
-const githubApiBaseUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/`;
+const repoApiBaseUrl = `https://cf-filesb.iaman.workers.dev/`;  // Replace with your Cloudflare Worker URL
 const repoContentsElement = document.getElementById('repo-contents');
 
 // Function to fetch and display repo contents
 function fetchRepoContents(path = '') {
-    const headers = {
-        'Authorization': `token ${githubToken}`
-    };
-    
-    fetch(githubApiBaseUrl + path, { headers })
+    fetch(repoApiBaseUrl + path)
         .then(response => {
             if (!response.ok) {
-                throw new Error(`GitHub API Error: ${response.statusText}`);
+                throw new Error(`Error: ${response.statusText}`);
             }
             return response.json();
         })
