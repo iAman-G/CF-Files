@@ -1,6 +1,6 @@
-const REPO_OWNER = process.env.VUE_APP_REPO_OWNER;
-const REPO_NAME = process.env.VUE_APP_REPO_NAME;
-const GITHUB_TOKEN = process.env.VUE_APP_GITHUB_TOKEN;
+const repoOwner = 'iAman-G';  // Replace with your GitHub username
+const repoName = 'CF-Files';  // Replace with your repository name
+const githubToken = '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';  // Replace with your personal GitHub token
 const githubApiBaseUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/`;
 const repoContentsElement = document.getElementById('repo-contents');
 
