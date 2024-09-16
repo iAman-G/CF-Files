@@ -31,14 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function fetchRepoContents(path = '') {
         const headers = new Headers();
 
-        // Add Basic Authentication header for protected folders
-        if (path.startsWith('/public')) {
-            const username = 'aman';  // Replace with your username
-            const password = 'amang'; // Replace with your password
-            const base64Credentials = btoa(`${username}:${password}`);
-            headers.append('Authorization', `Basic ${base64Credentials}`);
-        }
-
         fetch(repoApiBaseUrl + path, { headers })
             .then(response => {
                 if (!response.ok) {
