@@ -67,14 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetch(repoApiBaseUrl + path, { headers })
             .then(response => {
-                if (response.status === 401) {
+                if (response.status === 401 && protectedFolders.some(folder => path.startsWith(folder))) {
                     // Unauthorized, prompt for credentials
-                    if (protectedFolders.some(folder => path.startsWith(folder))) {
-                        authToken = null;
-                        fetchRepoContents(path);
-                    } else {
-                        throw new Error('Unauthorized access');
-                    }
+                    authToken = null;
+                    fetchRepoContents(path);
                 } else if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
                 }
