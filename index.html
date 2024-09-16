@@ -7,13 +7,18 @@
     <!-- Materialize CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
     <style>
+        .repo-contents {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; /* Add gap between items */
+        }
         .repo-item {
             padding: 10px;
             border-radius: 4px;
-            margin: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
-            text-align: center; /* Center text in grid view */
+            text-align: center; /* Center text in both list and grid views */
+            text-decoration: none;
         }
         .repo-item:hover {
             background-color: #f0f0f0;
@@ -21,19 +26,11 @@
         .folder {
             font-weight: bold;
         }
-        #back-button {
-            display: none;
-        }
-        .repo-contents {
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .repo-item {
-            flex: 1 1 100%; /* Default to list layout */
+        .list .repo-item {
+            flex: 1 1 100%; /* Full width for list view */
         }
         .grid .repo-item {
             flex: 1 1 calc(33.333% - 10px); /* Grid layout for larger screens */
-            margin: 5px;
         }
         @media (max-width: 600px) {
             .grid .repo-item {
@@ -50,7 +47,7 @@
         <!-- Toggle button for switching layouts -->
         <button id="toggle-layout" class="btn waves-effect waves-light">Switch to Grid</button>
         <!-- Container for repo contents -->
-        <div id="repo-contents" class="repo-contents"></div>
+        <div id="repo-contents" class="repo-contents list"></div>
     </div>
 
     <!-- Materialize JavaScript -->
