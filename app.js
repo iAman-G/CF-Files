@@ -1,6 +1,6 @@
-const repoOwner = '${REPO_OWNER}';  // Replace with your GitHub username
-const repoName = '${REPO_NAME}';  // Replace with your repository name
-const githubToken = '${GITHUB_TOKEN}';  // Replace with your personal GitHub token
+const repoOwner = ${REPO_OWNER};  // Replace with your GitHub username
+const repoName = ${REPO_NAME};  // Replace with your repository name
+const githubToken = ${GITHUB_TOKEN};  // Replace with your personal GitHub token
 
 //const githubApiBaseUrl = `https://cf-filesb.iaman.workers.dev/`;
 const githubApiBaseUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/`;
