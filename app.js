@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetch(repoApiBaseUrl + path, { headers })
             .then(response => {
+                console.log(`Response Status: ${response.status}`);  // Debug
                 if (response.status === 401 && protectedFolders.some(folder => path.startsWith(folder))) {
                     // Unauthorized, prompt for credentials
                     authToken = null;
