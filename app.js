@@ -9,7 +9,7 @@ function fetchRepoContents(path = '') {
     const headers = {
         'Authorization': `token ${githubToken}`
     };
-
+    
     fetch(githubApiBaseUrl + path, { headers })
         .then(response => {
             if (!response.ok) {
