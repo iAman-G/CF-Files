@@ -5,8 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleLayoutButton = document.getElementById('toggle-layout');
     let history = [];  // To keep track of navigation history
     let isGridView = false;  // Track current layout state
-    let authToken = null;  // To store the authentication token
-    const protectedFolders = ['/public/'];  // List of protected folders
 
     // Function to get icon based on file type
     function getIcon(type, name) {
@@ -23,56 +21,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     case 'js':
                     case 'html':
                     case 'css': return 'code';
-                    default: return 'insert_drive_file';
+                    default: return 'insert_drive_file';  // Default file icon
                 }
-            default: return 'insert_drive_file';
+            default: return 'insert_drive_file';  // Default file icon
         }
-    }
-
-    // Function to prompt for authentication
-    function promptForAuth() {
-        return new Promise((resolve, reject) => {
-            const username = prompt('Enter your username:');
-            const password = prompt('Enter your password:');
-            if (username && password) {
-                resolve(btoa(`${username}:${password}`));  // Encode credentials to base64
-            } else {
-                reject(new Error('Authentication credentials are required.'));
-            }
-        });
     }
 
     // Function to fetch and display repo contents
     function fetchRepoContents(path = '') {
-        const isProtected = protectedFolders.some(folder => path.startsWith(folder));
-
-        if (!authToken && isProtected) {
-            promptForAuth().then(token => {
-                authToken = token;
-                fetchData(path);  // Retry fetching data with authentication
-            }).catch(error => {
-                console.error('Authentication error:', error);
-            });
-        } else {
-            fetchData(path);  // Fetch data with existing authentication
-        }
-    }
-
-    // Helper function to fetch data
-    function fetchData(path) {
         const headers = new Headers();
-        if (authToken) {
-            headers.append('Authorization', `Basic ${authToken}`);
+
+        // Add Basic Authentication header for protected folders
+        if (path.startsWith('/public')) {
+            const username = 'aman';  // Replace with your username
+            const password = 'amang'; // Replace with your password
+            const base64Credentials = btoa(`${username}:${password}`);
+            headers.append('Authorization', `Basic ${base64Credentials}`);
         }
 
         fetch(repoApiBaseUrl + path, { headers })
             .then(response => {
-                console.log(`Response Status: ${response.status}`);  // Debug
-                if (response.status === 401 && protectedFolders.some(folder => path.startsWith(folder))) {
-                    // Unauthorized, prompt for credentials
-                    authToken = null;
-                    fetchRepoContents(path);
-                } else if (!response.ok) {
+                if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
                 }
                 return response.json();
@@ -94,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (Array.isArray(data)) {
                     // Display files and directories
                     data.forEach(item => {
-                        const element = document.createElement('div');
+                        const element = document.createElement('a');
                         element.textContent = item.name;
                         element.className = `repo-item ${item.type === 'dir' ? 'folder' : 'file'}`;
 
@@ -145,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleLayoutButton.addEventListener('click', () => {
         isGridView = !isGridView;  // Toggle the layout state
         repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : 'list'}`;  // Apply grid or list class
-        toggleLayoutButton.innerHTML = `<i class="material-icons">${isGridView ? 'view_list' : 'view_module'}</i>`;  // Update button icon
+        toggleLayoutButton.innerHTML = `<i class="material-icons"> ${isGridView ? 'view_list' : 'view_module'}</i>`;  // Update button icon
     });
 
     // Load the root of the repo
