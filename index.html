@@ -19,7 +19,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            position: relative;
         }
         #back-button, #toggle-layout {
             background-color: #03a9f4; /* Light blue button background */
@@ -27,26 +28,29 @@
         }
         #back-button {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
-            padding: 5px 10px;
+            bottom: -40px; /* Move closer to the files */
+            left: 0;
+            padding: 5px;
             border-radius: 50%;
+            z-index: 1; /* Ensure it is on top */
         }
         #toggle-layout {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 5px 10px;
+            top: 0;
+            right: 0;
+            padding: 5px;
             border-radius: 50%;
+            z-index: 1; /* Ensure it is on top */
         }
         .repo-contents {
             display: flex;
             flex-wrap: wrap;
             gap: 10px; /* Gap between items */
             padding-top: 10px; /* Add padding to the top for spacing */
+            margin-top: 60px; /* Space for back button */
         }
         .repo-item {
-            padding: 10px;
+            padding: 15px;
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
@@ -56,6 +60,8 @@
             align-items: center;
             gap: 10px; /* Space between icon and text */
             background-color: #ffffff; /* White background for items */
+            flex: 1 1 calc(100% - 20px); /* Full width with margins */
+            max-width: 100%; /* Ensure items don't overflow */
         }
         .repo-item:hover {
             background-color: #b3e5fc; /* Light blue on hover */
@@ -68,7 +74,7 @@
             font-weight: bold;
         }
         .list .repo-item {
-            flex: 1 1 100%; /* Full width for list view */
+            flex: 1 1 calc(100% - 20px); /* Full width for list view */
         }
         .grid .repo-item {
             flex: 1 1 calc(33.333% - 10px); /* Grid layout for larger screens */
