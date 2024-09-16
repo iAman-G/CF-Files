@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let history = [];  // To keep track of navigation history
     let isGridView = false;  // Track current layout state
     let authToken = null;  // To store the authentication token
-    let protectedFolders = ['/protected/'];  // Example: list of protected folders
+    let protectedFolders = ['/public/'];  // Example: list of protected folders
 
     // Function to get icon based on file type
     function getIcon(type, name) {
