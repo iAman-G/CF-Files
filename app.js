@@ -65,10 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             fetchRepoContents(item.path);
                         });
                     } else {
-                        // Handle file downloads
-                        element.href = item.download_url; // Link to the file's download URL
-                        element.target = '_blank'; // Open in a new tab for preview (if needed)
-                        element.download = item.name; // Force download for all file types
+                        element.href = item.download_url;
+                        element.download = item.name;
                     }
 
                     repoContentsElement.appendChild(element);
