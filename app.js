@@ -93,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleLayoutButton.addEventListener('click', () => {
         isGridView = !isGridView;
         applyLayout(); // Apply layout changes
+        toggleLayoutButton.innerHTML = `<i class="material-icons">${isGridView ? 'view_list' : 'view_module'}</i>`;
     });
 
     // Upload files
@@ -150,8 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (uploadedCount === totalSize) {
             uploadStatus.textContent = 'Upload complete!';
-            // Optionally refresh the file list after upload
-            fetchRepoContents(); 
+            fetchRepoContents(); // Refresh file list after upload
         }
     }
 
