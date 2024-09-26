@@ -80,7 +80,40 @@
             background-color: #4caf50;
             transition: width 0.4s;
         }
+        .repo-contents.grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        
+        .repo-contents.list {
+            display: block;
+        }
+        
+        .repo-item.grid {
+            flex-direction: column;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .repo-item.list {
+            flex-direction: row;
+        }
+
     </style>
+    <script>
+// Function to apply the current layout
+function applyLayout() {
+    repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : 'list'}`;
+    const items = document.querySelectorAll('.repo-item');
+    items.forEach(item => {
+        item.className = `repo-item ${isGridView ? 'grid' : 'list'}`;
+    });
+}
+
+    </script>
 </head>
 <body>
     <div class="container">
