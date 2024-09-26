@@ -41,44 +41,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 return response.json();
             })
             .then(data => {
-                // Clear existing content
                 repoContentsElement.innerHTML = '';
 
-                if (path) {
-                    backButton.style.display = 'block'; // Show back button if in subdirectory
-                } else {
-                    backButton.style.display = 'none'; // Hide back button if in root
-                }
+                backButton.style.display = path ? 'block' : 'none';
 
                 if (Array.isArray(data)) {
-                    // Display files and directories
                     data.forEach(item => {
                         const element = document.createElement('a');
                         element.textContent = item.name;
                         element.className = `repo-item ${item.type === 'dir' ? 'folder' : 'file'}`;
 
-                        // Add icons based on type
                         const icon = document.createElement('i');
                         icon.className = `material-icons icon`;
                         icon.textContent = getIcon(item.type, item.name);
                         element.prepend(icon);
 
                         if (item.type === 'dir') {
-                            // Fetch contents of the folder on click
                             element.addEventListener('click', () => {
-                                history.push(path);  // Add current path to history
+                                history.push(path);
                                 fetchRepoContents(item.path);
                             });
                         } else {
-                            // Create a download link
-                            element.href = item.download_url;  // Use download_url to get the direct file URL
-                            element.download = item.name;  // Set filename for download
+                            element.href = item.download_url;
+                            element.download = item.name;
                         }
 
                         repoContentsElement.appendChild(element);
                     });
-                } else {
-                    console.error('Unexpected API response:', data);
                 }
             })
             .catch(error => console.error('Error fetching repo contents:', error));
@@ -124,20 +113,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Function to handle the back navigation
+    // Function to handle back navigation
     function goBack() {
-        const previousPath = history.pop();  // Get the last path from history
-        fetchRepoContents(previousPath);  // Fetch contents of the previous path
+        const previousPath = history.pop();
+        fetchRepoContents(previousPath);
     }
 
-    // Add event listener to the back button
     backButton.addEventListener('click', goBack);
-
-    // Add event listener to the toggle layout button
     toggleLayoutButton.addEventListener('click', () => {
-        isGridView = !isGridView;  // Toggle the layout state
-        repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : 'list'}`;  // Apply grid or list class
-        toggleLayoutButton.innerHTML = `<i class="material-icons"> ${isGridView ? 'view_list' : 'view_module'}</i>`;  // Update button icon
+        isGridView = !isGridView;
+        repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : 'list'}`;
+        toggleLayoutButton.innerHTML = `<i class="material-icons">${isGridView ? 'view_list' : 'view_module'}</i>`;
     });
 
     // Load the root of the repo
