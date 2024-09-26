@@ -76,36 +76,38 @@
             display: none;
             margin-top: 20px;
         }
-        #progress-bar {
-            background: #4caf50;
-            height: 5px;
-            width: 0%;
-        }
-    </style>
+         #progress-bar {
+            width: 0;
+            height: 20px;
+            background-color: #4caf50;
+            transition: width 0.4s;
+        }    </style>
 </head>
 <body>
     <div class="container">
         <div class="center-align"><img src="https://static.amang.in/logo.png" style="height:50px" title="CF Files"> </div>
         <div class="button-container">
-            <button id="back-button" class="btn-small waves-effect waves-light"> 
+            <button id="back-button" class="btn-small waves-effect waves-light" style="display:none;"> 
                 <i class="material-icons">arrow_back</i>
             </button>
             <button id="toggle-layout" class="btn-small waves-effect waves-light"> 
                 <i class="material-icons">view_module</i>
             </button>
-            <button id="upload-button" class="btn-small waves-effect waves-light">Upload Files</button>
-            <input type="file" id="file-input" multiple webkitdirectory style="display: none;" />
+            <button id="upload-button" class="btn-small waves-effect waves-light"> 
+                <i class="material-icons">upload</i> Upload
+            </button>
+            <input type="file" id="file-input" multiple style="display:none;" webkitdirectory>
         </div>
+
         <div id="repo-contents" class="repo-contents list"></div>
-        <div id="progress-container" class="progress-container">
+
+        <div id="progress-container">
             <div id="progress-bar"></div>
-            <div id="upload-status"></div>
+            <p id="upload-status"></p>
         </div>
     </div>
 
-    <!-- Materialize JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <!-- JavaScript file with functionality -->
     <script src="app.js"></script>
 </body>
 </html>
