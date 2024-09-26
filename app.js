@@ -3,11 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const repoContentsElement = document.getElementById('repo-contents');
     const backButton = document.getElementById('back-button');
     const toggleLayoutButton = document.getElementById('toggle-layout');
-    const fileInput = document.getElementById('file-input');
     const uploadButton = document.getElementById('upload-button');
+    const fileInput = document.getElementById('file-input');
+    const progressContainer = document.getElementById('progress-container');
     const progressBar = document.getElementById('progress-bar');
     const uploadStatus = document.getElementById('upload-status');
-    
     let history = [];
     let isGridView = false;
 
@@ -45,8 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Clear existing content
                 repoContentsElement.innerHTML = '';
 
-                // Show/hide back button
-                backButton.style.display = path ? 'block' : 'none';
+                if (path) {
+                    backButton.style.display = 'block';
+                } else {
+                    backButton.style.display = 'none';
+                }
 
                 // Display files and directories
                 data.forEach(item => {
@@ -78,54 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Error fetching repo contents:', error));
     }
 
-    // Function to handle file uploads
-    async function uploadFiles(files) {
-        const totalFiles = files.length;
-        let uploadedFiles = 0;
-
-        // Show progress bar
-        document.getElementById('progress-container').style.display = 'block';
-        progressBar.style.width = '0%';
-
-        for (const file of files) {
-            const content = await file.text(); // Get file content
-
-            const response = await fetch(repoApiBaseUrl, {
-                method: 'POST',
-                body: JSON.stringify({
-                    fileName: file.name,
-                    content: btoa(content), // Encode as Base64
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.ok) {
-                uploadedFiles++;
-            }
-
-            // Update progress bar
-            const progressPercentage = Math.round((uploadedFiles / totalFiles) * 100);
-            progressBar.style.width = `${progressPercentage}%`;
-        }
-
-        // Show upload status
-        uploadStatus.textContent = 
-            uploadedFiles === totalFiles ? 'All files uploaded successfully!' : `${uploadedFiles} out of ${totalFiles} files uploaded.`;
-    }
-
-    // Add event listener to upload button
-    uploadButton.addEventListener('click', () => {
-        const files = Array.from(fileInput.files);
-        if (files.length === 0) {
-            alert('Please select a file or folder to upload.');
-            return;
-        }
-        uploadFiles(files);
-    });
-
-    // Handle back navigation
+    // Function to handle the back navigation
     backButton.addEventListener('click', () => {
         const previousPath = history.pop();
         fetchRepoContents(previousPath);
@@ -137,6 +93,64 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchRepoContents(); // Re-fetch contents to apply layout changes
         toggleLayoutButton.innerHTML = `<i class="material-icons">${isGridView ? 'view_list' : 'view_module'}</i>`;
     });
+
+    // Upload files
+    uploadButton.addEventListener('click', () => {
+        fileInput.click(); // Trigger the file input
+    });
+
+    fileInput.addEventListener('change', () => {
+        const files = Array.from(fileInput.files);
+        if (files.length === 0) {
+            alert('Please select a file or folder to upload.');
+            return;
+        }
+        uploadFiles(files);
+    });
+
+    function uploadFiles(files) {
+        progressContainer.style.display = 'block';
+        uploadStatus.textContent = 'Uploading...';
+        let totalSize = files.length;
+        let uploadedCount = 0;
+
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result.split(',')[1]; // Get base64 content
+                const fileName = file.webkitRelativePath || file.name; // Use relative path for folders
+
+                fetch(`${repoApiBaseUrl}/${fileName}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ fileName, content }),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Upload failed: ${response.statusText}`);
+                    }
+                    uploadedCount++;
+                    updateProgress(uploadedCount, totalSize);
+                })
+                .catch(error => {
+                    console.error('Error uploading file:', error);
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function updateProgress(uploadedCount, totalSize) {
+        const percentage = (uploadedCount / totalSize) * 100;
+        progressBar.style.width = `${percentage}%`;
+        uploadStatus.textContent = `Uploaded ${uploadedCount} of ${totalSize} files`;
+
+        if (uploadedCount === totalSize) {
+            uploadStatus.textContent = 'Upload complete!';
+        }
+    }
 
     // Load the root of the repo
     fetchRepoContents();
