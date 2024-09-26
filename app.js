@@ -113,8 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function uploadFiles(files) {
         progressContainer.style.display = 'block';
         uploadStatus.textContent = 'Uploading...';
-        let totalSize = files.length;
+        const totalSize = files.length;
         let uploadedCount = 0;
+        let uploadPromises = [];
 
         files.forEach(file => {
             const reader = new FileReader();
@@ -122,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const content = e.target.result.split(',')[1]; // Get base64 content
                 const filePath = file.webkitRelativePath || file.name; // Preserve folder structure
 
-                fetch(`${repoApiBaseUrl}`, {
+                const uploadPromise = fetch(`${repoApiBaseUrl}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -137,22 +138,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     updateProgress(uploadedCount, totalSize);
                 })
                 .catch(error => {
+                    // Display error message to the user
+                    uploadStatus.textContent += `\nError uploading ${file.name}: ${error.message}`;
                     console.error('Error uploading file:', error);
                 });
+
+                uploadPromises.push(uploadPromise);
             };
             reader.readAsDataURL(file);
         });
+
+        Promise.all(uploadPromises)
+            .then(() => {
+                uploadStatus.textContent = 'Upload complete!';
+                fetchRepoContents(); // Refresh file list after upload
+            })
+            .catch(error => {
+                uploadStatus.textContent += `\nFinal upload error: ${error.message}`;
+            });
     }
 
     function updateProgress(uploadedCount, totalSize) {
         const percentage = (uploadedCount / totalSize) * 100;
         progressBar.style.width = `${percentage}%`;
         uploadStatus.textContent = `Uploaded ${uploadedCount} of ${totalSize} files`;
-
-        if (uploadedCount === totalSize) {
-            uploadStatus.textContent = 'Upload complete!';
-            fetchRepoContents(); // Refresh file list after upload
-        }
     }
 
     // Load the root of the repo
