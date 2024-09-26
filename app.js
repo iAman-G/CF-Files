@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : 'list'}`;
     }
 
-    // Function to handle the back navigation
+    // Handle the back navigation
     backButton.addEventListener('click', () => {
         const previousPath = history.pop();
         fetchRepoContents(previousPath);
@@ -119,9 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const content = e.target.result.split(',')[1]; // Get base64 content
-                const fileName = file.webkitRelativePath || file.name; // Use relative path for folders
+                const fileName = file.name; // Just the file name for now
 
-                fetch(`${repoApiBaseUrl}/${fileName}`, {
+                fetch(`${repoApiBaseUrl}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
