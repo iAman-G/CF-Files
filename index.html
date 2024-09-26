@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         body {
-            background-color: #f8f9fa; /* Light background for better contrast */
+            background-color: #f8f9fa; /* Light background */
         }
         .container {
             padding: 20px;
@@ -27,33 +27,24 @@
             color: white;
         }
         #back-button {
-            position: absolute;
-            bottom: -40px; /* Move closer to the files */
-            left: 0;
-            padding: 5px;
-            z-index: 1; /* Ensure it is on top */
+            display: none; /* Hide by default */
         }
-        #toggle-layout {
-            position: absolute;
-            top: 0;
-            right: 0;
-            padding: 5px;
-            border-radius: 5%;
-            z-index: 1; /* Ensure it is on top */
+        .upload-section {
+            margin-bottom: 20px; /* Add spacing below the upload section */
         }
         .repo-contents {
             display: flex;
             flex-wrap: wrap;
             gap: 10px; /* Gap between items */
             padding-top: 10px; /* Add padding to the top for spacing */
-            margin-top: 60px; /* Space for back button */
+            margin-top: 10px; /* Adjusted margin */
         }
         .repo-item {
             padding: 15px;
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
-            text-align: left; /* Left align text in list view */
+            text-align: left; /* Left align text */
             text-decoration: none;
             display: flex;
             border: 1px solid;
@@ -71,13 +62,6 @@
         .icon {
             font-size: 24px;
         }
-        .upload-section {
-            margin-top: 20px;
-        }
-        .upload-section input {
-            display: inline-block;
-            margin-right: 10px;
-        }
     </style>
 </head>
 <body>
@@ -86,7 +70,7 @@
             <img src="https://static.amang.in/logo.png" style="height:50px" title="CF Files"> 
         </div>
         <div class="button-container">
-            <button id="back-button" class="btn-small waves-effect waves-light" style="display: none;"> 
+            <button id="back-button" class="btn-small waves-effect waves-light"> 
                 <i class="material-icons">arrow_back</i>
             </button>
             <button id="toggle-layout" class="btn-small waves-effect waves-light"> 
