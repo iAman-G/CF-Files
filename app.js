@@ -3,8 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const repoContentsElement = document.getElementById('repo-contents');
     const backButton = document.getElementById('back-button');
     const toggleLayoutButton = document.getElementById('toggle-layout');
-    const uploadButton = document.getElementById('upload-button');
-    const fileUploadInput = document.getElementById('file-upload');
     let history = [];  // To keep track of navigation history
     let isGridView = false;  // Track current layout state
 
@@ -41,13 +39,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 return response.json();
             })
             .then(data => {
+                console.log(data);  // Log the API response for debugging
+
                 // Clear existing content
                 repoContentsElement.innerHTML = '';
 
                 if (path) {
-                    backButton.style.display = 'block'; // Show back button if in subdirectory
+                    // Show the back button if we're in a subdirectory
+                    backButton.style.display = 'block';
                 } else {
-                    backButton.style.display = 'none'; // Hide back button if in root
+                    // Hide the back button if we're in the root directory
+                    backButton.style.display = 'none';
                 }
 
                 if (Array.isArray(data)) {
@@ -60,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Add icons based on type
                         const icon = document.createElement('i');
                         icon.className = `material-icons icon`;
-                        icon.textContent = getIcon(item.type, item.name);
+                        icon.textContent = getIcon(item.type, item.name);  // Get relevant icon
                         element.prepend(icon);
 
                         if (item.type === 'dir') {
@@ -73,6 +75,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             // Create a download link
                             element.href = item.download_url;  // Use download_url to get the direct file URL
                             element.download = item.name;  // Set filename for download
+                            element.addEventListener('click', (event) => {
+                                // Handle file download directly
+                                if (!element.href) {
+                                    event.preventDefault();
+                                    console.error('No download URL available.');
+                                }
+                            });
                         }
 
                         repoContentsElement.appendChild(element);
@@ -83,47 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => console.error('Error fetching repo contents:', error));
     }
-
-    // Function to handle file uploads
-    async function handleFileUpload(file) {
-        const path = ''; // Set the appropriate path where the file should be uploaded
-        const reader = new FileReader();
-
-        reader.onload = async () => {
-            const content = reader.result.split(',')[1]; // Base64 content
-            const fileName = file.name;
-
-            const response = await fetch(repoApiBaseUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    fileName: fileName,
-                    content: content,
-                }),
-            });
-
-            if (response.ok) {
-                console.log('File uploaded successfully');
-                fetchRepoContents(path); // Refresh the file list after upload
-            } else {
-                console.error('Upload failed:', await response.text());
-            }
-        };
-
-        reader.readAsDataURL(file);
-    }
-
-    // Add event listener to the upload button
-    uploadButton.addEventListener('click', () => {
-        const file = fileUploadInput.files[0];
-        if (file) {
-            handleFileUpload(file);
-        } else {
-            alert('Please select a file to upload.');
-        }
-    });
 
     // Function to handle the back navigation
     function goBack() {
