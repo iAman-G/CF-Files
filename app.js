@@ -120,14 +120,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const content = e.target.result.split(',')[1]; // Get base64 content
-                const fileName = file.name; // Just the file name for now
+                const filePath = file.webkitRelativePath || file.name; // Preserve folder structure
 
                 fetch(`${repoApiBaseUrl}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ fileName, content }),
+                    body: JSON.stringify({ fileName: filePath, content }),
                 })
                 .then(response => {
                     if (!response.ok) {
