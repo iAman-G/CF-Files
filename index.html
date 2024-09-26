@@ -103,17 +103,7 @@
         }
 
     </style>
-    <script>
-// Function to apply the current layout
-function applyLayout() {
-    repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : 'list'}`;
-    const items = document.querySelectorAll('.repo-item');
-    items.forEach(item => {
-        item.className = `repo-item ${isGridView ? 'grid' : 'list'}`;
-    });
-}
 
-    </script>
 </head>
 <body>
     <div class="container">
