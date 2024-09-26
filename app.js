@@ -3,38 +3,55 @@ document.addEventListener('DOMContentLoaded', () => {
     const repoContentsElement = document.getElementById('repo-contents');
     const backButton = document.getElementById('back-button');
     const toggleLayoutButton = document.getElementById('toggle-layout');
-    const uploadButton = document.getElementById('upload-button');
-    const fileUploadInput = document.getElementById('file-upload');
     let history = [];
     let isGridView = false;
 
+    // Function to get icon based on file type
     function getIcon(type, name) {
         const extension = name.split('.').pop().toLowerCase();
         switch (type) {
             case 'dir': return 'folder';
             case 'file':
-                if (['jpg', 'jpeg', 'png'].includes(extension)) return 'image';
-                if (['pdf'].includes(extension)) return 'picture_as_pdf';
-                if (['txt'].includes(extension)) return 'text_format';
-                return 'insert_drive_file';
+                switch (extension) {
+                    case 'jpg':
+                    case 'jpeg':
+                    case 'png': return 'image';
+                    case 'pdf': return 'picture_as_pdf';
+                    case 'txt': return 'text_format';
+                    case 'js':
+                    case 'html':
+                    case 'css': return 'code';
+                    default: return 'insert_drive_file';
+                }
             default: return 'insert_drive_file';
         }
     }
 
+    // Function to fetch and display repo contents
     function fetchRepoContents(path = '') {
         fetch(repoApiBaseUrl + path)
             .then(response => {
-                if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
                 return response.json();
             })
             .then(data => {
+                // Clear existing content
                 repoContentsElement.innerHTML = '';
-                backButton.style.display = path ? 'block' : 'none';
 
+                if (path) {
+                    backButton.style.display = 'block';
+                } else {
+                    backButton.style.display = 'none';
+                }
+
+                // Display files and directories
                 data.forEach(item => {
                     const element = document.createElement('a');
                     element.textContent = item.name;
                     element.className = `repo-item ${item.type === 'dir' ? 'folder' : 'file'}`;
+
                     const icon = document.createElement('i');
                     icon.className = `material-icons icon`;
                     icon.textContent = getIcon(item.type, item.name);
@@ -52,54 +69,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     repoContentsElement.appendChild(element);
                 });
+
+                // Apply layout class
+                repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : 'list'}`;
             })
             .catch(error => console.error('Error fetching repo contents:', error));
     }
 
-async function handleFileUpload(file) {
-    const reader = new FileReader();
-    reader.onload = async () => {
-        const content = reader.result.split(',')[1]; // Base64 content
-        const fileName = file.name;
-
-        const response = await fetch(repoApiBaseUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ fileName, content }),
-        });
-
-        if (response.ok) {
-            fetchRepoContents(''); // Refresh the file list after upload
-        } else {
-            console.error('Upload failed:', await response.text());
-        }
-    };
-
-    reader.readAsDataURL(file);
-}
-
-
-    uploadButton.addEventListener('click', () => {
-        const file = fileUploadInput.files[0];
-        if (file) {
-            handleFileUpload(file);
-        } else {
-            alert('Please select a file to upload.');
-        }
-    });
-
+    // Function to handle the back navigation
     backButton.addEventListener('click', () => {
         const previousPath = history.pop();
         fetchRepoContents(previousPath);
     });
 
+    // Toggle layout
     toggleLayoutButton.addEventListener('click', () => {
         isGridView = !isGridView;
-        repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : 'list'}`;
+        fetchRepoContents(); // Re-fetch contents to apply layout changes
         toggleLayoutButton.innerHTML = `<i class="material-icons">${isGridView ? 'view_list' : 'view_module'}</i>`;
     });
 
-    fetchRepoContents(); // Load the root of the repo
+    // Load the root of the repo
+    fetchRepoContents();
 });
