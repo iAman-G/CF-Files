@@ -56,29 +56,30 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Error fetching repo contents:', error));
     }
 
-    async function handleFileUpload(file) {
-        const reader = new FileReader();
-        reader.onload = async () => {
-            const content = reader.result.split(',')[1];
-            const fileName = file.name;
+async function handleFileUpload(file) {
+    const reader = new FileReader();
+    reader.onload = async () => {
+        const content = reader.result.split(',')[1]; // Base64 content
+        const fileName = file.name;
 
-            const response = await fetch(repoApiBaseUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ fileName, content }),
-            });
+        const response = await fetch(repoApiBaseUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ fileName, content }),
+        });
 
-            if (response.ok) {
-                fetchRepoContents(''); // Refresh the file list after upload
-            } else {
-                console.error('Upload failed:', await response.text());
-            }
-        };
+        if (response.ok) {
+            fetchRepoContents(''); // Refresh the file list after upload
+        } else {
+            console.error('Upload failed:', await response.text());
+        }
+    };
 
-        reader.readAsDataURL(file);
-    }
+    reader.readAsDataURL(file);
+}
+
 
     uploadButton.addEventListener('click', () => {
         const file = fileUploadInput.files[0];
