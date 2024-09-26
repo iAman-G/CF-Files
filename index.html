@@ -4,10 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub Repo Browser</title>
+    <!-- Materialize CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        /* Your existing styles */
+        body {
+            background-color: #f8f9fa; /* Light background for better contrast */
+        }
+        .container {
+            padding: 20px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        #back-button, #toggle-layout, #upload-button {
+            background-color: #03a9f4; /* Light blue button background */
+            color: white;
+        }
+        #back-button {
+            position: absolute;
+            bottom: -40px; /* Move closer to the files */
+            left: 0;
+            padding: 5px;
+            z-index: 1; /* Ensure it is on top */
+        }
+        #toggle-layout {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 5px;
+            border-radius: 5%;
+            z-index: 1; /* Ensure it is on top */
+        }
+        .repo-contents {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; /* Gap between items */
+            padding-top: 10px; /* Add padding to the top for spacing */
+            margin-top: 60px; /* Space for back button */
+        }
+        .repo-item {
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            text-align: left; /* Left align text in list view */
+            text-decoration: none;
+            display: flex;
+            border: 1px solid;
+            align-items: center;
+            gap: 10px; /* Space between icon and text */
+            background-color: #ffffff; /* White background for items */
+            flex: 1 1 calc(100% - 20px); /* Full width with margins */
+            max-width: 100%; /* Ensure items don't overflow */
+        }
+        .repo-item:hover {
+            background-color: #387bcd;
+            transform: scale(1.02);
+            color: #fff;
+        }
+        .icon {
+            font-size: 24px;
+        }
+        .upload-section {
+            margin-top: 20px;
+        }
+        .upload-section input {
+            display: inline-block;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -16,7 +86,7 @@
             <img src="https://static.amang.in/logo.png" style="height:50px" title="CF Files"> 
         </div>
         <div class="button-container">
-            <button id="back-button" class="btn-small waves-effect waves-light"> 
+            <button id="back-button" class="btn-small waves-effect waves-light" style="display: none;"> 
                 <i class="material-icons">arrow_back</i>
             </button>
             <button id="toggle-layout" class="btn-small waves-effect waves-light"> 
@@ -24,16 +94,17 @@
             </button>
         </div>
 
-        <!-- Upload Section -->
-        <div>
+        <div class="upload-section">
             <input type="file" id="file-upload" />
             <button id="upload-button" class="btn-small waves-effect waves-light">Upload</button>
         </div>
-        
+
         <div id="repo-contents" class="repo-contents list"></div>
     </div>
 
+    <!-- Materialize JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- JavaScript file with functionality -->
     <script src="app.js"></script>
 </body>
 </html>
