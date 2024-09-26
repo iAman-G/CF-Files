@@ -45,11 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Clear existing content
                 repoContentsElement.innerHTML = '';
 
-                if (path) {
-                    backButton.style.display = 'block';
-                } else {
-                    backButton.style.display = 'none';
-                }
+                // Toggle back button visibility
+                backButton.style.display = path ? 'block' : 'none';
 
                 // Display files and directories
                 data.forEach(item => {
@@ -76,9 +73,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 // Apply layout class
-                repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : 'list'}`;
+                applyLayout();
             })
             .catch(error => console.error('Error fetching repo contents:', error));
+    }
+
+    // Function to apply the current layout
+    function applyLayout() {
+        repoContentsElement.className = `repo-contents ${isGridView ? 'grid' : 'list'}`;
     }
 
     // Function to handle the back navigation
@@ -90,8 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Toggle layout
     toggleLayoutButton.addEventListener('click', () => {
         isGridView = !isGridView;
-        fetchRepoContents(); // Re-fetch contents to apply layout changes
-        toggleLayoutButton.innerHTML = `<i class="material-icons">${isGridView ? 'view_list' : 'view_module'}</i>`;
+        applyLayout(); // Apply layout changes
     });
 
     // Upload files
@@ -149,6 +150,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (uploadedCount === totalSize) {
             uploadStatus.textContent = 'Upload complete!';
+            // Optionally refresh the file list after upload
+            fetchRepoContents(); 
         }
     }
 
