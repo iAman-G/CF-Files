@@ -2,6 +2,7 @@ import os
 import socket
 import datetime
 import requests
+import re
 
 # Read environment variables
 SOLARWINDS_URL = os.getenv("SOLARWINDS_ENDPOINT")
@@ -19,21 +20,27 @@ sock.bind((UDP_IP, UDP_PORT))
 
 print(f"✅ Listening for syslog messages on {UDP_IP}:{UDP_PORT}...")
 
+# Regex to remove syslog timestamp & priority (e.g., "<15>Apr 4 22:06:57")
+SYSLOG_CLEANUP_REGEX = re.compile(r"<\d+>\w{3}\s+\d+\s\d+:\d+:\d+\s")
+
 while True:
     try:
         data, addr = sock.recvfrom(4096)  # Increase buffer if needed
         log_data = data.decode("utf-8", errors="ignore").strip()
-        
+
         client_ip = addr[0]
-        
+
         # Resolve hostname if possible
         try:
             client_hostname = socket.gethostbyaddr(client_ip)[0]
         except socket.herror:
             client_hostname = None  # Don't use "Unknown"
 
+        # Remove syslog timestamp & priority
+        log_data_cleaned = SYSLOG_CLEANUP_REGEX.sub("", log_data).strip()
+
         # Format log entry
-        log_entry = f"{client_ip}{' - ' + client_hostname if client_hostname else ''} | {log_data}"
+        log_entry = f"{client_ip}{' - ' + client_hostname if client_hostname else ''} | {log_data_cleaned}"
         
         headers = {
             "Content-Type": "application/octet-stream",
@@ -44,6 +51,6 @@ while True:
 
         # Forward log to SolarWinds
         response = requests.post(SOLARWINDS_URL, headers=headers, data=log_entry)
-        
+
     except Exception as e:
         print(f"❌ Error processing log: {e}")
