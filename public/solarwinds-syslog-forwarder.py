@@ -30,28 +30,20 @@ while True:
         try:
             client_hostname = socket.gethostbyaddr(client_ip)[0]
         except socket.herror:
-            client_hostname = None  # Keep clean formatting
+            client_hostname = None  # Don't use "Unknown"
 
-        # Current UTC timestamp
-        timestamp = datetime.datetime.utcnow().isoformat()
-
-        # Format log entry (without unnecessary dashes)
-        log_entry = f"{client_ip}{f' - {client_hostname}' if client_hostname else ''} | {log_data}"
-
+        # Format log entry
+        log_entry = f"{client_ip}{' - ' + client_hostname if client_hostname else ''} | {log_data}"
+        
         headers = {
             "Content-Type": "application/octet-stream",
             "Authorization": f"Bearer {TOKEN}",
             "X-Client-IP": client_ip,
-            "X-Client-Hostname": client_hostname or "Unknown",
+            "X-Client-Hostname": client_hostname or "",
         }
 
         # Forward log to SolarWinds
         response = requests.post(SOLARWINDS_URL, headers=headers, data=log_entry)
-
-        if response.status_code == 200:
-            print(f"📤 Forwarded log: {log_entry}")
-        else:
-            print(f"⚠️ Failed to send log. HTTP {response.status_code}: {response.text}")
-
+        
     except Exception as e:
         print(f"❌ Error processing log: {e}")
