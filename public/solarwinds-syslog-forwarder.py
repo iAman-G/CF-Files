@@ -20,32 +20,38 @@ sock.bind((UDP_IP, UDP_PORT))
 print(f"✅ Listening for syslog messages on {UDP_IP}:{UDP_PORT}...")
 
 while True:
-    data, addr = sock.recvfrom(4096)  # Increase buffer if needed
-    log_data = data.decode("utf-8", errors="ignore").strip()
-    
-    client_ip = addr[0]
-    client_port = addr[1]
-    
-    # Resolve hostname if possible
     try:
-        client_hostname = socket.gethostbyaddr(client_ip)[0]
-    except socket.herror:
-        client_hostname = "Unknown"
-    
-    # Current UTC timestamp
-    timestamp = datetime.datetime.utcnow().isoformat()
+        data, addr = sock.recvfrom(4096)  # Increase buffer if needed
+        log_data = data.decode("utf-8", errors="ignore").strip()
+        
+        client_ip = addr[0]
+        
+        # Resolve hostname if possible
+        try:
+            client_hostname = socket.gethostbyaddr(client_ip)[0]
+        except socket.herror:
+            client_hostname = None  # Keep clean formatting
 
-    # Format log entry
-    log_entry = f"[{timestamp}] Source IP: {client_ip}:{client_port} | Hostname: {client_hostname} | Log: {log_data}"
-    
-    headers = {
-        "Content-Type": "application/octet-stream",
-        "Authorization": f"Bearer {TOKEN}",
-        "X-Client-IP": client_ip,
-        "X-Client-Hostname": client_hostname,
-    }
+        # Current UTC timestamp
+        timestamp = datetime.datetime.utcnow().isoformat()
 
-    # Forward log to SolarWinds
-    response = requests.post(SOLARWINDS_URL, headers=headers, data=log_entry)
-    
-    print(f"📤 Forwarded log: {log_entry} | Response: {response.status_code}")
+        # Format log entry (without unnecessary dashes)
+        log_entry = f"{client_ip}{f' - {client_hostname}' if client_hostname else ''} | {log_data}"
+
+        headers = {
+            "Content-Type": "application/octet-stream",
+            "Authorization": f"Bearer {TOKEN}",
+            "X-Client-IP": client_ip,
+            "X-Client-Hostname": client_hostname or "Unknown",
+        }
+
+        # Forward log to SolarWinds
+        response = requests.post(SOLARWINDS_URL, headers=headers, data=log_entry)
+
+        if response.status_code == 200:
+            print(f"📤 Forwarded log: {log_entry}")
+        else:
+            print(f"⚠️ Failed to send log. HTTP {response.status_code}: {response.text}")
+
+    except Exception as e:
+        print(f"❌ Error processing log: {e}")
