@@ -18,7 +18,8 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
 
 # Regex to remove syslog priority + timestamp (e.g., "<15>Apr  4 22:06:57")
-SYSLOG_CLEANUP_REGEX = re.compile(r"<\d+>\w{3}\s+\d+\s\d{2}:\d{2}:\d{2}\s")
+# Match: <pri>timestamp optional-hostname
+SYSLOG_CLEANUP_REGEX = re.compile(r"<\d+>\w{3}\s+\d+\s\d{2}:\d{2}:\d{2}\s(?:[\w\.\-]+)?\s*")
 
 while True:
     try:
