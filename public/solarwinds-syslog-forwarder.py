@@ -21,7 +21,7 @@ sock.bind((UDP_IP, UDP_PORT))
 # Examples:
 # <15>Apr  4 22:06:57 dlink-router
 # <6>Apr 4 8:12:01
-SYSLOG_PREFIX_REGEX = re.compile(r"<\d+>\w{3}\s+\d+\s\d{1,2}:\d{2}:\d{2}(?:\s+\S+)?\s*")
+SYSLOG_PREFIX_REGEX = re.compile(r"<\d+>\w{3}\s+\d+\s\d{1,2}:\d{2}:\d{2}\s")
 
 while True:
     try:
