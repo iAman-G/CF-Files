@@ -1,32 +1,48 @@
 import socket
+import datetime
+from flask import Flask, request
 import requests
-import os
 
-# Configuration
-HOST = "0.0.0.0"  # Listen on all interfaces
-PORT = 514        # UDP Syslog Port
-BUFFER_SIZE = 1024
-SOLARWINDS_URL = os.getenv("SOLARWINDS_ENDPOINT")
-AUTH_TOKEN = os.getenv("SOLARWINDS_TOKEN")
-HEADERS = {
-    "Content-Type": "application/octet-stream",
-    "Authorization": f"Bearer {AUTH_TOKEN}"
-}
+app = Flask(__name__)
 
-# Start UDP server
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind((HOST, PORT))
-print(f"🔄 Listening for syslog messages on UDP {PORT}...")
+SOLARWINDS_URL = "https://logs.collector.ap-01.cloud.solarwinds.com/v1/logs"
+TOKEN = "b4f9DeyyunOGFXcDYap5g458ZaDQhUbgoI-ykR_kVxOX_gnr_gaJyJTcxrsWNaR3_xiVTZo"
 
-while True:
-    data, addr = sock.recvfrom(BUFFER_SIZE)
-    log_message = data.decode().strip()
+@app.route("/", methods=["POST"])
+def receive_log():
+    log_data = request.get_data().decode("utf-8", errors="ignore")
+    source_ip = request.remote_addr  # Client IP
+    timestamp = datetime.datetime.utcnow().isoformat()  # Current time (UTC)
     
-    print(f"📥 Received from {addr[0]}: {log_message}")
-
-    # Send log to SolarWinds
+    # Attempt to resolve hostname, fallback to IP if resolution fails
     try:
-        response = requests.post(SOLARWINDS_URL, headers=HEADERS, data=log_message)
-        print(f"📤 Forwarded to SolarWinds: {response.status_code}")
-    except Exception as e:
-        print(f"❌ Error forwarding log: {e}")
+        hostname = socket.gethostbyaddr(source_ip)[0]
+    except socket.herror:
+        hostname = "Unknown"
+
+    user_agent = request.headers.get("User-Agent", "N/A")  # Get User-Agent header
+    content_length = request.headers.get("Content-Length", "N/A")  # Log size
+    all_headers = dict(request.headers)  # Capture all headers
+
+    log_entry = (
+        f"Timestamp: {timestamp} | "
+        f"Source IP: {source_ip} | "
+        f"Hostname: {hostname} | "
+        f"User-Agent: {user_agent} | "
+        f"Content-Length: {content_length} | "
+        f"Headers: {all_headers} | "
+        f"Log: {log_data}"
+    )
+
+    headers = {
+        "Content-Type": "application/octet-stream",
+        "Authorization": f"Bearer {TOKEN}"
+    }
+
+    # Forward to SolarWinds
+    requests.post(SOLARWINDS_URL, headers=headers, data=log_entry)
+
+    return "Log forwarded", 200
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=514, debug=True)
