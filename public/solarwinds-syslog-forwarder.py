@@ -1,6 +1,5 @@
 import os
 import socket
-import datetime
 import requests
 import re
 
@@ -13,15 +12,13 @@ if not SOLARWINDS_URL or not TOKEN:
 
 # Set up UDP syslog server
 UDP_IP = "0.0.0.0"
-UDP_PORT = 514  # Change to 1514 if non-root
+UDP_PORT = 514  # Use 1514 if non-root
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
 
-print(f"✅ Listening for syslog messages on {UDP_IP}:{UDP_PORT}...")
-
-# Regex to remove syslog priority + timestamp (e.g., "<15>Apr 4 22:06:57")
-SYSLOG_CLEANUP_REGEX = re.compile(r"<\d+>\w{3}\s+\d+\s\d+:\d+:\d+\s")
+# Regex to remove syslog priority + timestamp (e.g., "<15>Apr  4 22:06:57")
+SYSLOG_CLEANUP_REGEX = re.compile(r"<\d+>\w{3}\s+\d+\s\d{2}:\d{2}:\d{2}\s")
 
 while True:
     try:
@@ -30,13 +27,16 @@ while True:
 
         client_ip = addr[0]
 
+        # Try to resolve client hostname (optional)
         try:
             client_hostname = socket.gethostbyaddr(client_ip)[0]
         except socket.herror:
             client_hostname = None
 
+        # Remove embedded syslog timestamp and priority
         log_data_cleaned = SYSLOG_CLEANUP_REGEX.sub("", log_data).strip()
 
+        # Construct final log entry
         log_entry = f"{client_ip}{' - ' + client_hostname if client_hostname else ''} | {log_data_cleaned}"
 
         headers = {
@@ -46,9 +46,9 @@ while True:
             "X-Client-Hostname": client_hostname or "",
         }
 
-        # Send to SolarWinds
+        # Send cleaned log to SolarWinds
         requests.post(SOLARWINDS_URL, headers=headers, data=log_entry)
 
     except Exception as e:
-        # Only log actual errors
+        # Only print real errors (won't spam logs)
         print(f"❌ Error processing log: {e}")
