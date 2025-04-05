@@ -1,5 +1,6 @@
+print(">>> STARTING LOKI FORWARDER <<<")
+
 import socket
-import json
 import requests
 import os
 from datetime import datetime
@@ -9,10 +10,9 @@ LOKI_HOST = os.getenv("LOKI_HOST", "localhost")
 LOKI_USERNAME = os.getenv("LOKI_USERNAME")
 LOKI_PASSWORD = os.getenv("LOKI_PASSWORD")
 LISTEN_PORT = int(os.getenv("LISTEN_PORT", "514"))
-LOKI_PROTO = os.getenv("LOKI_PROTO", "https")
 
-# Loki push URL
-LOKI_URL = f"{LOKI_PROTO}://{LOKI_HOST}/loki/api/v1/push"
+# Loki push URL (HTTPS only)
+LOKI_URL = f"https://{LOKI_HOST}/loki/api/v1/push"
 
 # Setup UDP listener
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
