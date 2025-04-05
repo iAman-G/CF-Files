@@ -1,23 +1,49 @@
-server:
-  http_listen_port: ${HTTP_PORT}
-  grpc_listen_port: ${GRPC_PORT}
+import socket
+import json
+import requests
+import time
+import os
+from datetime import datetime
 
-positions:
-  filename: /tmp/positions.yaml
+# Get configs from environment
+LOKI_HOST = os.getenv("LOKI_HOST", "localhost")
+LOKI_USERNAME = os.getenv("LOKI_USERNAME")
+LOKI_PASSWORD = os.getenv("LOKI_PASSWORD")
+LISTEN_PORT = int(os.getenv("LISTEN_PORT", "514"))
 
-clients:
-  - url: https://${LOKI_USERNAME}:${LOKI_PASSWORD}@${LOKI_HOST}/loki/api/v1/push
+# Construct the full push URL
+LOKI_URL = f"https://{LOKI_HOST}/loki/api/v1/push"
 
-scrape_configs:
-  - job_name: syslog
-    syslog:
-      listen_address: 0.0.0.0:${LISTEN_PORT}
-      idle_timeout: 60s
-      label_structured_data: yes
-    relabel_configs:
-      - source_labels: ['__syslog_message_hostname']
-        target_label: 'host'
-      - source_labels: ['__syslog_message_severity']
-        target_label: 'severity'
-      - source_labels: ['__syslog_message_app_name']
-        target_label: 'app'
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind(("0.0.0.0", LISTEN_PORT))
+print(f"Listening on UDP {LISTEN_PORT}")
+
+while True:
+    data, addr = sock.recvfrom(65535)
+    log = data.decode(errors='ignore').strip()
+    print(f"Received from {addr[0]}: {log}")
+
+    payload = {
+        "streams": [
+            {
+                "labels": f'{{host="{addr[0]}", job="udp-logs"}}',
+                "entries": [
+                    {
+                        "ts": datetime.utcnow().isoformat("T") + "Z",
+                        "line": log
+                    }
+                ]
+            }
+        ]
+    }
+
+    try:
+        r = requests.post(
+            LOKI_URL,
+            auth=(LOKI_USERNAME, LOKI_PASSWORD),
+            json=payload,
+            timeout=5
+        )
+        print(f"Loki response: {r.status_code} - {r.text}")
+    except Exception as e:
+        print(f"Failed to send to Loki: {e}")
